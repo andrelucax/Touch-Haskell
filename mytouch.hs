@@ -3,6 +3,10 @@
 --   -This implementation does not have -d (--date=STRING) and -h (--no-dereference)
 --   -This implementation changed the way of how -t is handled
 
+-- -c cant throw error if arq does not exist
+-- -amf should turn into -a -m -f
+-- - should be /dev/stdout
+
 -- Imports
 import System.Environment(getArgs)
 import System.Exit (exitSuccess, exitFailure)
@@ -268,12 +272,12 @@ checkTimesSpecified _ hasT hasR = do
     return [hasT, hasR]
 
 -- Delete first appearence of
-deleteFirst _ [] = [] 
-deleteFirst x (arg:args) =
-    if x == arg then
-        args
-    else
-        arg:deleteFirst x args
+-- deleteFirst _ [] = [] 
+-- deleteFirst x (arg:args) =
+--     if x == arg then
+--         args
+--     else
+--         arg:deleteFirst x args
 
 getArgParam (arg : args)
     | take 12 arg == "--reference=" = drop 12 arg
@@ -307,77 +311,132 @@ checkCreateFile (arg:args) =
 checkCreateFile _ =
     return True
 
+openFileArray (arg:args) = do
+    openFile arg ReadWriteMode
+    openFileArray args
+openFileArray _ =
+    return ()
+
+
 createFiles createFile (arg:args) =
     Control.Monad.when createFile
-    $ case arg of
-        "-a" -> createFiles createFile args
-        "--time=atime" -> createFiles createFile args
-        "--time=access" -> createFiles createFile args
-        "--time=use" -> createFiles createFile args
-        "-m" -> createFiles createFile args
-        "--time=modify" -> createFiles createFile args
-        "--time=mtime" -> createFiles createFile args
-        "-c" -> createFiles createFile args
-        "--no-create" -> createFiles createFile args
-        "-f" -> createFiles createFile args
-        "--reference=FILE" -> createFiles createFile args
-        "-r" -> createFiles createFile (tail args)
-        "-t" -> createFiles createFile (tail args)
-        "-" -> createFiles createFile args
-        _ -> do openFile arg ReadWriteMode
-                createFiles createFile args
+    $ if arg == "--" then
+          do openFileArray args
+      else
+          do case arg of
+               "-a" -> createFiles createFile args
+               "--time=atime" -> createFiles createFile args
+               "--time=access" -> createFiles createFile args
+               "--time=use" -> createFiles createFile args
+               "-m" -> createFiles createFile args
+               "--time=modify" -> createFiles createFile args
+               "--time=mtime" -> createFiles createFile args
+               "-c" -> createFiles createFile args
+               "--no-create" -> createFiles createFile args
+               "-f" -> createFiles createFile args
+               "--reference=FILE" -> createFiles createFile args
+               "-r" -> createFiles createFile (tail args)
+               "-t" -> createFiles createFile (tail args)
+               "-" -> createFiles createFile args
+               _ -> do openFile arg ReadWriteMode
+                       createFiles createFile args
 createFiles _ _ =
     return ()
 
 checkIfHasFile (arg:args) =
-    case arg of
-        "-a" -> checkIfHasFile args
-        "--time=atime" -> checkIfHasFile args
-        "--time=access" -> checkIfHasFile args
-        "--time=use" -> checkIfHasFile args
-        "-m" -> checkIfHasFile args
-        "--time=modify" -> checkIfHasFile args
-        "--time=mtime" -> checkIfHasFile args
-        "-c" -> checkIfHasFile args
-        "--no-create" -> checkIfHasFile args
-        "-f" -> checkIfHasFile args
-        "--reference=FILE" -> checkIfHasFile args
-        "-r" -> checkIfHasFile (tail args)
-        "-t" -> checkIfHasFile (tail args)
-        "-" -> checkIfHasFile args
-        _ -> return True
+    if arg == "--" then
+        if null args then do
+            putStrLn "touch: missing file operand"
+            showHelpOptionAndExit
+        else
+            return True
+    else
+        case arg of
+            "-a" -> checkIfHasFile args
+            "--time=atime" -> checkIfHasFile args
+            "--time=access" -> checkIfHasFile args
+            "--time=use" -> checkIfHasFile args
+            "-m" -> checkIfHasFile args
+            "--time=modify" -> checkIfHasFile args
+            "--time=mtime" -> checkIfHasFile args
+            "-c" -> checkIfHasFile args
+            "--no-create" -> checkIfHasFile args
+            "-f" -> checkIfHasFile args
+            "--reference=FILE" -> checkIfHasFile args
+            "-r" -> checkIfHasFile (tail args)
+            "-t" -> checkIfHasFile (tail args)
+            "-" -> return True
+            _ -> return True
 checkIfHasFile _ = do
     putStrLn "touch: missing file operand"
     showHelpOptionAndExit
 
-touch (arg:args) accesTime modifyTime changeAcces changeModify =
-    case arg of
-        "-a" -> touch args accesTime modifyTime changeAcces changeModify
-        "--time=atime" -> touch args accesTime modifyTime changeAcces changeModify
-        "--time=access" -> touch args accesTime modifyTime changeAcces changeModify
-        "--time=use" -> touch args accesTime modifyTime changeAcces changeModify
-        "-m" -> touch args accesTime modifyTime changeAcces changeModify
-        "--time=modify" -> touch args accesTime modifyTime changeAcces changeModify
-        "--time=mtime" -> touch args accesTime modifyTime changeAcces changeModify
-        "-c" -> touch args accesTime modifyTime changeAcces changeModify
-        "--no-create" -> touch args accesTime modifyTime changeAcces changeModify
-        "-f" -> touch args accesTime modifyTime changeAcces changeModify
-        "--reference=FILE" -> touch args accesTime modifyTime changeAcces changeModify
-        "-r" -> touch (tail args) accesTime modifyTime changeAcces changeModify
-        "-t" -> touch (tail args) accesTime modifyTime changeAcces changeModify
-        "-" -> touch args accesTime modifyTime changeAcces changeModify
-        _ -> do
-                if changeAcces then
-                    setAccessTime arg accesTime
-                else
-                    putStr ""
+touchArray (arg:args) accesTime modifyTime changeAcces changeModify = do
+    if arg == "-" then do
+        if changeAcces then
+            setAccessTime "/proc/self/fd/1" accesTime
+        else
+            putStr ""
+        if changeModify then
+            setModificationTime "/proc/self/fd/1" modifyTime
+        else
+            putStr ""
 
-                if changeModify then
-                    setModificationTime arg modifyTime
-                else
-                    putStr ""    
-                
-                touch args accesTime modifyTime changeAcces changeModify
+    else do
+        if changeAcces then
+            setAccessTime arg accesTime
+        else
+            putStr ""
+        if changeModify then
+            setModificationTime arg modifyTime
+        else
+            putStr ""
+    
+    touchArray args accesTime modifyTime changeAcces changeModify
+touchArray _ _ _ _ _ = 
+    return ()
+
+touch (arg:args) accesTime modifyTime changeAcces changeModify =
+    if arg == "--" then
+        touchArray args accesTime modifyTime changeAcces changeModify
+    else
+        case arg of
+            "-a" -> touch args accesTime modifyTime changeAcces changeModify
+            "--time=atime" -> touch args accesTime modifyTime changeAcces changeModify
+            "--time=access" -> touch args accesTime modifyTime changeAcces changeModify
+            "--time=use" -> touch args accesTime modifyTime changeAcces changeModify
+            "-m" -> touch args accesTime modifyTime changeAcces changeModify
+            "--time=modify" -> touch args accesTime modifyTime changeAcces changeModify
+            "--time=mtime" -> touch args accesTime modifyTime changeAcces changeModify
+            "-c" -> touch args accesTime modifyTime changeAcces changeModify
+            "--no-create" -> touch args accesTime modifyTime changeAcces changeModify
+            "-f" -> touch args accesTime modifyTime changeAcces changeModify
+            "--reference=FILE" -> touch args accesTime modifyTime changeAcces changeModify
+            "-r" -> touch (tail args) accesTime modifyTime changeAcces changeModify
+            "-t" -> touch (tail args) accesTime modifyTime changeAcces changeModify
+            "-" -> touch args accesTime modifyTime changeAcces changeModify
+            _ -> do
+                    if arg == "-" then do
+                        if changeAcces then
+                            setAccessTime "/proc/self/fd/1" accesTime
+                        else
+                            putStr ""
+                        if changeModify then
+                            setModificationTime "/proc/self/fd/1" modifyTime
+                        else
+                            putStr ""
+    
+                    else do
+                        if changeAcces then
+                            setAccessTime arg accesTime
+                        else
+                            putStr ""
+                        if changeModify then
+                            setModificationTime arg modifyTime
+                        else
+                            putStr ""    
+                    
+                    touch args accesTime modifyTime changeAcces changeModify
 touch _ _ _ _ _= do
     return ()
 
@@ -392,7 +451,6 @@ getChangeOption args
 
 -- Main
 main = do
-    -- TODO separate args (ex: -amf -> -a -m -f)
     args <- getArgs
 
     checkInvalidOrExitArgs args
@@ -402,12 +460,10 @@ main = do
     [accesTime, modifyTime] <- getAccesModifyTime (takeWhile (/= "--") args) hasT hasR
 
     [changeAccess, changeModify] <- getChangeOption (takeWhile (/= "--") args)
-
-    let removedFirsthh = deleteFirst "--" args
     
-    checkIfHasFile removedFirsthh
+    checkIfHasFile args
 
-    createFile <- checkCreateFile removedFirsthh
-    createFiles createFile removedFirsthh
+    createFile <- checkCreateFile (takeWhile (/= "--") args)
+    createFiles createFile args
 
-    touch removedFirsthh accesTime modifyTime changeAccess changeModify
+    touch args accesTime modifyTime changeAccess changeModify
