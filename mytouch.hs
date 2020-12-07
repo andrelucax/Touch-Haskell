@@ -5,7 +5,6 @@
 
 -- -c cant throw error if arq does not exist
 -- -amf should turn into -a -m -f
--- - should be /dev/stdout
 
 -- Imports
 import System.Environment(getArgs)
@@ -383,11 +382,12 @@ touchArray (arg:args) accesTime modifyTime changeAcces changeModify = do
             putStr ""
 
     else do
-        if changeAcces then
+        fileExists <- checkIfExists arg
+        if changeAcces && fileExists then
             setAccessTime arg accesTime
         else
             putStr ""
-        if changeModify then
+        if changeModify && fileExists then
             setModificationTime arg modifyTime
         else
             putStr ""
@@ -427,11 +427,12 @@ touch (arg:args) accesTime modifyTime changeAcces changeModify =
                             putStr ""
     
                     else do
-                        if changeAcces then
+                        fileExists <- checkIfExists arg
+                        if changeAcces && fileExists then
                             setAccessTime arg accesTime
                         else
                             putStr ""
-                        if changeModify then
+                        if changeModify && fileExists then
                             setModificationTime arg modifyTime
                         else
                             putStr ""    
@@ -439,6 +440,14 @@ touch (arg:args) accesTime modifyTime changeAcces changeModify =
                     touch args accesTime modifyTime changeAcces changeModify
 touch _ _ _ _ _= do
     return ()
+
+checkIfExists file = do
+    isFile <- doesFileExist file
+    isDirectory <- doesDirectoryExist file
+    if isFile || isDirectory then
+        return True
+    else
+        return False
 
 getChangeOption args
     | "-a" `elem` args || "--time=atime" `elem` args || "--time=access"`elem` args || "--time=use" `elem` args
