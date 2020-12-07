@@ -10,6 +10,8 @@ This is a implementation of [touch](https://github.com/wertarbyte/coreutils/blob
 
 - The ```-t``` flag was simplified (all elements are required).
 
+- Concatenated flags are not allowed (instead of -amc use -a -m -c).
+
 # How to run
 
 - Install Haskell - [tutorial](https://www.haskell.org/downloads/linux/)
@@ -38,6 +40,8 @@ O trabalho consistia em implementar o [touch](https://github.com/wertarbyte/core
 - O programa não apresenta as flags ```-d``` (```--date=STRING```) e ```-h``` (```--no-dereference```).
 
 - A flag ```-t``` foi simplificada de modo a exigir todos os elementos.
+
+- Flags concatenadas não são permitidas (invés de usar -amc use -a -m -c).
 
 ## Como Rodar
 
