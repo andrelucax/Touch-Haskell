@@ -19,7 +19,7 @@ This is a implementation of [touch](https://github.com/wertarbyte/coreutils/blob
 $ ghc touch.hs -o touch
 ```
 
-- Running (run ```$ ./touch --help``` for more information)
+- Running (run ```$ ./mytouch --help``` for more information)
 ```
 $ ./touch [OPTION]... FILE...
 ```
@@ -48,7 +48,7 @@ O trabalho consistia em implementar o [touch](https://github.com/wertarbyte/core
 $ ghc touch.hs -o touch
 ```
 
-- Rode (execute ```$ ./touch --help``` para mais informações)
+- Rode (execute ```$ ./mytouch --help``` para mais informações)
 ```
 $ ./touch [OPTION]... FILE...
 ```

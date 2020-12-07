@@ -4,7 +4,7 @@
 --   -This implementation changed the way of how -t is handled
 
 -- Imports
-import System.Environment(getProgName, getArgs)
+import System.Environment(getArgs)
 import System.Exit (exitSuccess, exitFailure)
 import System.Directory (setModificationTime, setAccessTime, doesDirectoryExist, doesFileExist, getAccessTime, getModificationTime)
 import Data.Time (timeZoneName, getTimeZone, getCurrentTime, defaultTimeLocale)
@@ -18,43 +18,83 @@ version = "1.0"
 
 -- Print help message and exit
 showHelpOptionAndExit = do
-    putStr "Try: './"
-    progName <- getProgName
-    putStr progName
+    putStr "Try: 'touch"
+    -- progName <- getProgName
+    -- putStr progName
     putStrLn " --help' for more information."
     exitFailure
 
 -- Print version and exit
 printVersionAndExit = do
-    putStr "touch in haskell\nVersion: "
-    putStrLn version
-    putStrLn "\nWritten by Andre Pinto."
+    putStrLn "touch (GNU coreutils) 8.30"
+    putStrLn "Copyright (C) 2018 Free Software Foundation, Inc."
+    putStrLn "License GPLv3+: GNU GPL version 3 or later <https://gnu.org/licenses/gpl.html>."
+    putStrLn "This is free software: you are free to change and redistribute it."
+    putStrLn "There is NO WARRANTY, to the extent permitted by law."
+    putStrLn ""
+    putStrLn "Written by Paul Rubin, Arnold Robbins, Jim Kingdon,"
+    putStrLn "David MacKenzie, and Randy Smith."
+
+    -- putStr "touch in haskell\nVersion: "
+    -- putStrLn version
+    -- putStrLn "\nWritten by Andre Pinto."
     exitSuccess
 
 -- Print help menu and exit
 printHelpMenuAndExit = do
-    progName <- getProgName
-    putStr "Usage: ./"
-    putStr progName
-    putStrLn " [OPTION]... FILE..."
+    putStrLn "Usage: touch [OPTION]... FILE..."
     putStrLn "Update the access and modification times of each FILE to the current time."
-    putStrLn "\nA FILE argument that does not exist is created empty, unless -c or -h"
+    putStrLn ""
+    putStrLn "A FILE argument that does not exist is created empty, unless -c or -h"
     putStrLn "is supplied."
-    putStrLn "\nA FILE argument string of - is handled specially and causes touch to"
+    putStrLn ""
+    putStrLn "A FILE argument string of - is handled specially and causes touch to"
     putStrLn "change the times of the file associated with standard output."
-    putStrLn "\nMandatory arguments to long options are mandatory for short options too."
-    putStrLn "  -a                    change only the acess time"
-    putStrLn "  -c, --no-create       do not create any files"
-    putStrLn "  -f                    (ignored)"
-    putStrLn "  -m                    change only the modification time"
-    putStrLn "  -r, --reference=FILE  use this file's times instead of current time"
-    putStrLn "  -t STAMP              use YYYYMMDDhhmm.ss instead of current time"
-    putStrLn "    --time=WORD         change the specified time:"
-    putStrLn "                          WORD is access, atime, or use: equivalent to -a"
-    putStrLn "                          WORD is modify or mtime: equivalent to -m"
-    putStrLn "    --help      display this help and exit"
-    putStrLn "    --version   output version information and exit"
-    putStrLn "\nNote that the -d and -t options accept different time-date formats."
+    putStrLn ""
+    putStrLn "Mandatory arguments to long options are mandatory for short options too."
+    putStrLn "  -a                     change only the access time"
+    putStrLn "  -c, --no-create        do not create any files"
+    putStrLn "  -d, --date=STRING      parse STRING and use it instead of current time"
+    putStrLn "  -f                     (ignored)"
+    putStrLn "  -h, --no-dereference   affect each symbolic link instead of any referenced"
+    putStrLn "                         file (useful only on systems that can change the"
+    putStrLn "                         timestamps of a symlink)"
+    putStrLn "  -m                     change only the modification time"
+    putStrLn "  -r, --reference=FILE   use this file's times instead of current time"
+    putStrLn "  -t STAMP               use [[CC]YY]MMDDhhmm[.ss] instead of current time"
+    putStrLn "      --time=WORD        change the specified time:"
+    putStrLn "                           WORD is access, atime, or use: equivalent to -a"
+    putStrLn "                           WORD is modify or mtime: equivalent to -m"
+    putStrLn "      --help     display this help and exit"
+    putStrLn "      --version  output version information and exit"
+    putStrLn ""
+    putStrLn "Note that the -d and -t options accept different time-date formats."
+    putStrLn ""
+    putStrLn "GNU coreutils online help: <https://www.gnu.org/software/coreutils/>"
+    putStrLn "Full documentation at: <https://www.gnu.org/software/coreutils/touch>"
+    putStrLn "or available locally via: info '(coreutils) touch invocation'"
+    -- progName <- getProgName
+    -- putStr "Usage: ./"
+    -- putStr progName
+    -- putStrLn " [OPTION]... FILE..."
+    -- putStrLn "Update the access and modification times of each FILE to the current time."
+    -- putStrLn "\nA FILE argument that does not exist is created empty, unless -c or -h"
+    -- putStrLn "is supplied."
+    -- putStrLn "\nA FILE argument string of - is handled specially and causes touch to"
+    -- putStrLn "change the times of the file associated with standard output."
+    -- putStrLn "\nMandatory arguments to long options are mandatory for short options too."
+    -- putStrLn "  -a                    change only the acess time"
+    -- putStrLn "  -c, --no-create       do not create any files"
+    -- putStrLn "  -f                    (ignored)"
+    -- putStrLn "  -m                    change only the modification time"
+    -- putStrLn "  -r, --reference=FILE  use this file's times instead of current time"
+    -- putStrLn "  -t STAMP              use YYYYMMDDhhmm.ss instead of current time"
+    -- putStrLn "    --time=WORD         change the specified time:"
+    -- putStrLn "                          WORD is access, atime, or use: equivalent to -a"
+    -- putStrLn "                          WORD is modify or mtime: equivalent to -m"
+    -- putStrLn "    --help      display this help and exit"
+    -- putStrLn "    --version   output version information and exit"
+    -- putStrLn "\nNote that the -d and -t options accept different time-date formats."
     exitSuccess
 
 -- Handle args (TEST)
