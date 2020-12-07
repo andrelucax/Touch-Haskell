@@ -311,8 +311,12 @@ checkCreateFile _ =
     return True
 
 openFileArray (arg:args) = do
-    openFile arg ReadWriteMode
-    openFileArray args
+    isDir <- doesDirectoryExist arg
+    if isDir then
+        openFileArray args
+    else do
+        openFile arg ReadWriteMode
+        openFileArray args
 openFileArray _ =
     return ()
 
@@ -337,8 +341,13 @@ createFiles createFile (arg:args) =
                "-r" -> createFiles createFile (tail args)
                "-t" -> createFiles createFile (tail args)
                "-" -> createFiles createFile args
-               _ -> do openFile arg ReadWriteMode
-                       createFiles createFile args
+               _ -> do 
+                        isDir <- doesDirectoryExist arg
+                        if isDir then
+                            createFiles createFile args
+                        else do
+                            openFile arg ReadWriteMode
+                            createFiles createFile args
 createFiles _ _ =
     return ()
 
