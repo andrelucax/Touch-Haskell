@@ -1,0 +1,43 @@
+## Intro
+
+    Trabalho - Fazer o porte do touch utilizando o Haskell
+
+## Mostrar o codigo do touch
+
+## Mostrar o help do touch e explicar
+
+## Responder perguntas
+
+    1. Qual e o paradigma predominante do porte?
+        Apesar do Haskell ser uma "purely functional programming language" e 
+        nitido que no porte o paradigma predominante e o Imperativo, tendo 
+        varios blocos DO gigantes
+
+    2. Quais foram os pontos do codigo que sofreram as maiores modificacoes?
+        Eu nao tive base no codigo original, eu vi o que o programa fazia 
+        e fui implementando de acordo com a minha cabeca e como o paradigma 
+        e diferente ficou bastante diferente o codigo
+
+    3. Qual foi o ponto mais dificil/complicado do porte?
+        -Nao conhecimento inicial do Haskell e do paradigma funcional
+        -O tema escolhido foi um pouco maior do que o esperado pelo prazo
+
+    4. Quais caracteristicas da linguagem-alvo facilitaram/dificultaram o porte?
+        O programa existia muitas flags que dependia de um input entao o codigo 
+        precisou ter muitas partes nao puras, e por nao poder alterar as variaveis
+        acabou dificultando o tratamento das flags
+
+    5. Quais caracteristicas fundamentais do paradigma do porte tiveram de ser violadas/adaptadas/modificadas para que o porte fosse possivel?
+        As partes nao puras do codigo (IO)
+
+    6. Quais foram as principais caracteristicas do paradigma do porte que foram utilizadas/respeitadas?
+        Recursividade
+
+    7. A linguagem-alvo e adequada para o porte da ferramenta em questao?
+        Creio que nao por precisar tratar muitos inputs e flags mas pode ser 
+        que eu nao encontrei uma solucao melhor e como o escopo era um pouco grande 
+        eu acabei fazendo sem pensar muito, so fazendo funcionar
+
+## Mostrar o meu code e explicar
+
+## Like

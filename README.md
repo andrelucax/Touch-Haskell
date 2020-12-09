@@ -49,7 +49,7 @@ O trabalho consistia em implementar o [touch](https://github.com/wertarbyte/core
 
 - Compile
 ```
-$ ghc touch.hs -o touch
+$ ghc mytouch.hs -o mytouch
 ```
 
 - Rode (execute ```$ ./mytouch --help``` para mais informações)

@@ -2,9 +2,7 @@
 -- Notes:
 --   -This implementation does not have -d (--date=STRING) and -h (--no-dereference)
 --   -This implementation changed the way of how -t is handled
-
--- -c cant throw error if arq does not exist
--- -amf should turn into -a -m -f
+--   -This implementation does not support concatened flags (-amf should be -a -m -f)
 
 -- Imports
 import System.Environment(getArgs)
